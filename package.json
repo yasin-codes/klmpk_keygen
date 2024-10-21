@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
+    "stop": "stop index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "yasin",
@@ -14,6 +15,7 @@
     "@themaximalist/keygen.js": "^0.0.5",
     "await": "^0.2.6",
     "express": "^4.21.1",
-    "keygen": "^0.4.0"
+    "keygen": "^0.4.0",
+    "parse": "^5.3.0"
   }
 }

@@ -1,5 +1,6 @@
 import express from "express";
 import Keygen from "@themaximalist/keygen.js";
+import { parse } from "url";
 
 const app = express();
 const port = 3000;
@@ -9,14 +10,50 @@ const keygen = new Keygen({
   account_id: "47ac6ac3-fb16-4bcc-8df7-222cc9e4fde9",
   length: 16, // 16 characters
   type: "alphanumeric", // Alphanumeric characters
-  casing: "sensitive", // Case-insensitive (Uppercase)
+  casing: "incase-sensitive", // Case-insensitive (Uppercase)
 });
 
 // Function to calculate the valid date (1 year from the current date)
 function getValidUntil() {
-  const currentDate = new Date();
-  currentDate.setFullYear(currentDate.getFullYear() + 1);
-  return currentDate.toISOString(); // ISO format for datetime
+  const http = require("http");
+  const url = require("url");
+
+  const port = process.argv[2];
+
+  const server = http.createServer((req, res) => {
+    const { pathname, query } = url.parse(req.url, true);
+
+    if (pathname === "/api/parsetime" && query.iso) {
+      const date = new Date(query.iso);
+      const nextYearDate = new Date(date);
+      nextYearDate.setFullYear(nextYearDate.getFullYear() + 1); // Add one year
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          hour: date.getHours(),
+          minute: date.getMinutes(),
+          second: date.getSeconds(),
+          nextYear: nextYearDate.toISOString(), // Return the date one year later in ISO format
+        })
+      );
+    } else if (pathname === "/api/unixtime" && query.iso) {
+      const date = new Date(query.iso);
+      const nextYearDate = new Date(date);
+      nextYearDate.setFullYear(nextYearDate.getFullYear() + 1); // Add one year
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          unixtime: date.getTime(),
+          nextYearUnixtime: nextYearDate.getTime(), // Return Unix time of the date one year later
+        })
+      );
+    } else {
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.end("Not Found");
+    }
+  });
 }
 
 // Serve the simple HTML page with a button and email input
