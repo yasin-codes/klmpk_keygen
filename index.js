@@ -3,7 +3,7 @@ import Keygen from "@themaximalist/keygen.js";
 import { parse } from "url";
 
 const app = express();
-const port = 3000;
+const port = 4321;
 
 // Configure the keygen with the desired options
 const keygen = new Keygen({
@@ -15,61 +15,28 @@ const keygen = new Keygen({
 
 // Function to calculate the valid date (1 year from the current date)
 function getValidUntil() {
-  const http = require("http");
-  const url = require("url");
+  const nextYearDate = new Date();
+  nextYearDate.setFullYear(nextYearDate.getFullYear() + 1);
 
-  const port = process.argv[2];
-
-  const server = http.createServer((req, res) => {
-    const { pathname, query } = url.parse(req.url, true);
-
-    if (pathname === "/api/parsetime" && query.iso) {
-      const date = new Date(query.iso);
-      const nextYearDate = new Date(date);
-      nextYearDate.setFullYear(nextYearDate.getFullYear() + 1); // Add one year
-
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(
-        JSON.stringify({
-          hour: date.getHours(),
-          minute: date.getMinutes(),
-          second: date.getSeconds(),
-          nextYear: nextYearDate.toISOString(), // Return the date one year later in ISO format
-        })
-      );
-    } else if (pathname === "/api/unixtime" && query.iso) {
-      const date = new Date(query.iso);
-      const nextYearDate = new Date(date);
-      nextYearDate.setFullYear(nextYearDate.getFullYear() + 1); // Add one year
-
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(
-        JSON.stringify({
-          unixtime: date.getTime(),
-          nextYearUnixtime: nextYearDate.getTime(), // Return Unix time of the date one year later
-        })
-      );
-    } else {
-      res.writeHead(404, { "Content-Type": "text/plain" });
-      res.end("Not Found");
-    }
-  });
+  return nextYearDate.toLocaleString("en-GB", { timeZone: "Asia/Jakarta" });
 }
+
+console.log(getValidUntil());
 
 // Serve the simple HTML page with a button and email input
 app.get("/", (req, res) => {
   res.send(`
-    <html>
-      <body>
-        <h3>Keygen Generator</h3>
-        <form action="/generate-key" method="GET">
-          <label for="email">Email:</label><br>
-          <input type="email" id="email" name="email_customer" required><br><br>
-          <input type="submit" value="Generate Key">
-        </form>
-      </body>
-    </html>
-  `);
+      <html>
+        <body>
+          <h3>Keygen Generator</h3>
+          <form action="/generate-key" method="GET">
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email_customer" required><br><br>
+            <input type="submit" value="Generate Key">
+          </form>
+        </body>
+      </html>
+    `);
 });
 
 // Function to generate the key
